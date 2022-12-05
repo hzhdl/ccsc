@@ -13,8 +13,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/Chain/**").hasRole("USER")
+//                .antMatchers("/Chain/**").hasRole("USER")
+                .antMatchers("/Chain/**").permitAll()
+                .antMatchers("/Contract/**").permitAll()
+                .antMatchers("/Subcribe/**").permitAll()
                 .antMatchers("/Test/**").permitAll()
                 .anyRequest().authenticated()
                 .and()

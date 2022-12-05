@@ -4,12 +4,47 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.OAEPParameterSpec;
 import javax.crypto.spec.PSource;
 import java.security.*;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 import java.security.spec.MGF1ParameterSpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Random;
+
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.util.Base64Utils;
 
 public class RSACipher {
+
+    /**
+     * 生成秘钥对
+     * @return 公私钥对
+     */
+    public static void generateKeyPair() throws NoSuchAlgorithmException, NoSuchProviderException {
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+        SecureRandom secureRandom=new SecureRandom();
+        secureRandom.setSeed(new Date().getTime()+ new Random().nextLong());
+        keyPairGenerator.initialize(1024,secureRandom);
+        KeyPair keyPair = keyPairGenerator.generateKeyPair();
+
+        RSAPublicKey rsaPublicKey = (RSAPublicKey) keyPair.getPublic();
+        RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) keyPair.getPrivate();
+//        String publicKeyString = Base64.encodeBase64String(rsaPublicKey.getEncoded());
+//        String privateKeyString = Base64.encodeBase64String(rsaPrivateKey.getEncoded());
+        String publicKeyString = Base64Utils.encodeToString(rsaPublicKey.getEncoded());
+        String privateKeyString = Base64Utils.encodeToString(rsaPrivateKey.getEncoded());
+//        System.out.println(publicKeyString);
+//        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(rsaPublicKey.getEncoded());
+//        System.out.println(Base64Utils.encodeToString(keySpec.getEncoded()));
+//        System.out.println(privateKeyString);
+//        PKCS8EncodedKeySpec keySpec1 = new PKCS8EncodedKeySpec(rsaPrivateKey.getEncoded());
+//        System.out.println(Base64Utils.encodeToString(keySpec1.getEncoded()));
+//        System.out.println(privateKeyString);
+
+
+    }
 
     /**
      * 获取公钥
@@ -19,6 +54,7 @@ public class RSACipher {
     public static PublicKey getPublicKey(String key) throws Exception {
         // 按照X.509标准对其进行编码的密钥
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(Base64Utils.decode(key.getBytes()));
+//        System.out.println(Base64Utils.encodeToString(keySpec.getEncoded()));
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
         // 生成公钥
         PublicKey publicKey = keyFactory.generatePublic(keySpec);
@@ -127,21 +163,23 @@ public class RSACipher {
     }
 
     public static void main(String[] args) throws Exception {
-        //客户端代码
-        String text = "hello";
-        //使用服务端公钥加密
-        byte[] encryptText = RSACipher.encrypt(Config.SERVER_PUBLIC_KEY, text.getBytes());
-        System.out.println("加密后:\n" + new String(encryptText));
-        //使用客户端私钥签名
-        String signature = RSACipher.sign(Config.CLIENT_PRIVATE_KEY, encryptText);
-        System.out.println("签名:\n" + signature);
-        //服务端代码
-        //使用客户端公钥验签
-        boolean result = RSACipher.checkSign(Config.CLIENT_PUBLIC_KEY, encryptText, signature);
-        System.out.println("验签:\n" + result);
-        //使用服务端私钥解密
-        byte[] decryptText = RSACipher.decrypt(Config.SERVER_PRIVATE_KEY, encryptText);
-        System.out.println("解密后:\n" + new String(decryptText));
+//        //客户端代码
+//        String text = "hello";
+//        //使用服务端公钥加密
+//        byte[] encryptText = RSACipher.encrypt(Config.SERVER_PUBLIC_KEY, text.getBytes());
+//        System.out.println("加密后:\n" + new String(encryptText));
+//        //使用客户端私钥签名
+//        String signature = RSACipher.sign(Config.CLIENT_PRIVATE_KEY, encryptText);
+//        System.out.println("签名:\n" + signature);
+//        //服务端代码
+//        //使用客户端公钥验签
+//        boolean result = RSACipher.checkSign(Config.CLIENT_PUBLIC_KEY, encryptText, signature);
+//        System.out.println("验签:\n" + result);
+//        //使用服务端私钥解密
+//        byte[] decryptText = RSACipher.decrypt(Config.SERVER_PRIVATE_KEY, encryptText);
+//        System.out.println("解密后:\n" + new String(decryptText));
+        generateKeyPair();
+        generateKeyPair();
     }
 }
 

@@ -1,7 +1,9 @@
 package com.ccsc.ccsc.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ccsc.ccsc.entry.Chain;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.ldap.embedded.EmbeddedLdapProperties;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -13,7 +15,7 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class ChainService {
+public class ChainService implements Datacheck{
 
     @Resource
     private MongoTemplate mongoTemplate;
@@ -25,6 +27,15 @@ public class ChainService {
     }
     public Object collectionExists(String name){
         return mongoTemplate.collectionExists(name);
+    }
+    public Boolean collectionExists(String Address,String ChainID){
+
+        Criteria criteria = Criteria.where("Adress").is(Address);
+        criteria.and("ChainID").is(ChainID);
+        Query query= new Query(criteria);
+        List<Chain> chains = mongoTemplate.find(query, Chain.class, Collectionname);
+        return chains.size() != 0;
+
     }
 
     public List<Chain> getDocumentALL(){
@@ -69,5 +80,34 @@ public class ChainService {
         System.out.println(new Date().hashCode());
         //mongoTemplate.save(chain,Collectionname);
         return mongoTemplate.insert(chain1,Collectionname);
+    }
+
+    public Chain insertDocument(Chain chain){
+        return mongoTemplate.insert(chain,Collectionname);
+    }
+
+
+    @Override
+    public Boolean checkdefault(JSONObject jsonObject) {
+        String chainid= (String) jsonObject.get("ChainID");
+        String address= (String) jsonObject.get("address");
+//        首先校验是否有空值。
+        if(jsonObject.get("data")==null ||address==null
+                ||chainid==null|| jsonObject.get("PublicKey")==null
+                ||jsonObject.get("ChainName")==null
+        ){
+            return false;
+        }else {
+            Boolean aBoolean = collectionExists(address, chainid);
+            return !aBoolean;
+        }
+
+
+
+    }
+
+    @Override
+    public Boolean checkID(JSONObject jsonObject) {
+        return null;
     }
 }
