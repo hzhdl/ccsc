@@ -1,9 +1,13 @@
 package com.ccsc.ccsc.entry;
 
-import com.alibaba.fastjson.JSONObject;
+import lombok.Data;
 
+@Data
+public class ObjectFactory {
 
-public interface ObjectFactory {
+    public static Object getInstance(String classname){
 
-    public Object getobjectfromfactory(JSONObject jsonObject);
+        return null;
+    }
+
 }

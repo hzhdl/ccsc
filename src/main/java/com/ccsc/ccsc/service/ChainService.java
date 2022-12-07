@@ -88,14 +88,24 @@ public class ChainService implements Datacheck{
 
 
     @Override
+    /*检测注册是否符合规则*/
     public Boolean checkdefault(JSONObject jsonObject) {
+
+        if (jsonObject.getJSONObject("data")==null){
+            return false;
+        }else
+            jsonObject =jsonObject.getJSONObject("data");
         String chainid= (String) jsonObject.get("ChainID");
         String address= (String) jsonObject.get("address");
 //        首先校验是否有空值。
-        if(jsonObject.get("data")==null ||address==null
-                ||chainid==null|| jsonObject.get("PublicKey")==null
+        if(address==null ||chainid==null|| jsonObject.get("Publickey")==null
                 ||jsonObject.get("ChainName")==null
         ){
+            System.out.println(jsonObject.get("data"));
+            System.out.println(jsonObject.get("ChainID"));
+            System.out.println(jsonObject.get("address"));
+            System.out.println(jsonObject.get("Publickey"));
+            System.out.println(jsonObject.get("ChainName"));
             return false;
         }else {
             Boolean aBoolean = collectionExists(address, chainid);

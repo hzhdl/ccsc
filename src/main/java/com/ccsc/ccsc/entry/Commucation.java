@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 @Setter
 @Getter
 @Accessors(chain = true)
+@Data
 public class Commucation {
 
     public  String ClientPublicKey;

@@ -13,10 +13,19 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Random;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Hex;
 import org.springframework.util.Base64Utils;
 
+@Getter
+@Setter
 public class RSACipher {
+
+    public static  String publicKeyString="";
+
+    public static String privateKeyString="";
 
     /**
      * 生成秘钥对
@@ -42,8 +51,8 @@ public class RSACipher {
 //        PKCS8EncodedKeySpec keySpec1 = new PKCS8EncodedKeySpec(rsaPrivateKey.getEncoded());
 //        System.out.println(Base64Utils.encodeToString(keySpec1.getEncoded()));
 //        System.out.println(privateKeyString);
-
-
+        RSACipher.publicKeyString=publicKeyString;
+        RSACipher.privateKeyString=privateKeyString;
     }
 
     /**
@@ -126,8 +135,8 @@ public class RSACipher {
             signature.update(content);
             // 获得签名字节
             byte[] signed = signature.sign();
-            // 进行base64编码返回
-            return new String(Base64Utils.encode(signed));
+            // 进行HEX编码返回
+            return Base64Utils.encodeToString(signed);
         } catch (Exception e) {
             e.printStackTrace();
         }

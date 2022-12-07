@@ -2,6 +2,7 @@ package com.ccsc.ccsc.util;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -9,6 +10,7 @@ import java.io.Serializable;
 @Service
 @Getter
 @Setter
+@Accessors(chain = true)
 public class Result implements Serializable {
 
     private int code;
@@ -42,6 +44,17 @@ public class Result implements Serializable {
         result.setEncryptflag(false);
         return result;
     }
+    public static Result success(String msg){
+        Result result=new Result();
+        result.setCode(1);
+        result.setMsg(msg);
+        result.setData("");
+        result.setExdata("");
+        result.setMsignature("");
+        result.setCsignature("");
+        result.setEncryptflag(false);
+        return result;
+    }
     public static Result success(Object data,Object count,Object exdata){
         Result result=new Result();
         result.setCode(1);
@@ -66,6 +79,8 @@ public class Result implements Serializable {
         result.setEncryptflag(encryptflag);
         return result;
     }
+
+
     public static Result failure(){
         Result result=new Result();
         result.setCode(0);

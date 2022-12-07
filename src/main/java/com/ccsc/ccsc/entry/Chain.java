@@ -4,15 +4,24 @@ package com.ccsc.ccsc.entry;
 import com.alibaba.fastjson.JSONObject;
 import com.ccsc.ccsc.util.RSACipher;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import org.apache.commons.codec.binary.Hex;
+import org.springframework.security.core.token.Sha512DigestUtils;
+import org.springframework.util.Base64Utils;
 
+
+import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.Date;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @ToString
 @Accessors(chain = true)
-public class Chain extends Commucation implements ObjectFactory {
+public class Chain extends Commucation implements Parsejson {
 
     private String ChainHash;
     private String Adress;
@@ -24,21 +33,46 @@ public class Chain extends Commucation implements ObjectFactory {
     private Date time;
 
 
+    /*
+        * {
+            code: 1,
+            msg: 'success',
+            data: {
+                address:"http://172.16.0.13:3000",
+                ChainName:"ETH",
+                ChainID:"11",
+                Publickey:"",
+            },
+            count: null,
+            exdata: '',
+            encryptflag: false,
+            Msignature:'',
+            Csignature: ''
+        }
+    *
+    * */
     @Override
-    public Object getobjectfromfactory(JSONObject jsonObject) {
-
-        Chain chain = (Chain) new Chain()
-                .setChainHash("")
-                .setChainID((String) jsonObject.get("ChainID"))
-                .setAdress((String) jsonObject.get("address"))
+    public Object parsejsonwithInstance(JSONObject jsonObject) throws NoSuchAlgorithmException, NoSuchProviderException {
+        try {
+            RSACipher.generateKeyPair();
+        }catch (Exception exception){
+            System.out.println(exception.getMessage());
+            return null;
+        }
+        jsonObject = jsonObject.getJSONObject("data");
+        String chainhash= Hex.encodeHexString(Sha512DigestUtils.sha(jsonObject.toString()
+                + String.valueOf(new Date().getTime())));
+        return new Chain()
+                .setChainHash(chainhash)
                 .setExdata("")
-                .setChainName((String) jsonObject.get("ChainName"))
-                .setTime(new Date())
-                .setStatus("0")
+                .setAdress((String) jsonObject.get("address"))
                 .setFlag("0")
-                .setServerPublicKey((String) jsonObject.get("PublicKey"))
-                .setClientPublicKey("")
-                .setClientSerectKey("");
-        return null;
+                .setChainID((String) jsonObject.get("ChainID"))
+                .setChainName((String) jsonObject.get("ChainName"))
+                .setStatus("0")
+                .setTime(new Date())
+                .setServerPublicKey((String) jsonObject.get("Publickey"))
+                .setClientPublicKey(RSACipher.publicKeyString)
+                .setClientSerectKey(RSACipher.privateKeyString);
     }
 }
