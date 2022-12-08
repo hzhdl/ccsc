@@ -135,7 +135,7 @@ public class RSACipher {
             signature.update(content);
             // 获得签名字节
             byte[] signed = signature.sign();
-            // 进行HEX编码返回
+            // 进行Base64编码返回
             return Base64Utils.encodeToString(signed);
         } catch (Exception e) {
             e.printStackTrace();

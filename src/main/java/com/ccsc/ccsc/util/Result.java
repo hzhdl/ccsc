@@ -24,40 +24,43 @@ public class Result implements Serializable {
 
     public static Result success(){
         Result result=new Result();
-        result.setCode(1);
+        result.setCode(0);
         result.setMsg("success");
         result.setData("");
         result.setExdata("");
         result.setMsignature("");
         result.setCsignature("");
         result.setEncryptflag(false);
+        result.setCount("");
         return result;
     }
     public static Result success(Object data){
         Result result=new Result();
-        result.setCode(1);
+        result.setCode(0);
         result.setMsg("success");
         result.setData(data);
         result.setExdata("");
         result.setMsignature("");
         result.setCsignature("");
         result.setEncryptflag(false);
+        result.setCount("");
         return result;
     }
     public static Result success(String msg){
         Result result=new Result();
-        result.setCode(1);
+        result.setCode(0);
         result.setMsg(msg);
         result.setData("");
         result.setExdata("");
         result.setMsignature("");
         result.setCsignature("");
         result.setEncryptflag(false);
+        result.setCount("");
         return result;
     }
     public static Result success(Object data,Object count,Object exdata){
         Result result=new Result();
-        result.setCode(1);
+        result.setCode(0);
         result.setMsg("success");
         result.setData(data);
         result.setCount(count);
@@ -65,11 +68,12 @@ public class Result implements Serializable {
         result.setMsignature("");
         result.setCsignature("");
         result.setEncryptflag(false);
+        result.setCount("");
         return result;
     }
     public static Result success(Object data,Object count,String exdata, String msignature, String csignature,Boolean encryptflag){
         Result result=new Result();
-        result.setCode(1);
+        result.setCode(0);
         result.setMsg("success");
         result.setData(data);
         result.setCount(count);
@@ -77,30 +81,33 @@ public class Result implements Serializable {
         result.setMsignature(msignature);
         result.setCsignature(csignature);
         result.setEncryptflag(encryptflag);
+        result.setCount("");
         return result;
     }
 
 
     public static Result failure(){
         Result result=new Result();
-        result.setCode(0);
+        result.setCode(1);
         result.setMsg("fail");
         result.setData("");
         result.setExdata("");
         result.setMsignature("");
         result.setCsignature("");
         result.setEncryptflag(false);
+        result.setCount("");
         return result;
     }
     public static Result failure(Object data){
         Result result=new Result();
-        result.setCode(0);
+        result.setCode(1);
         result.setMsg("fail");
         result.setData(data);
         result.setExdata("");
         result.setMsignature("");
         result.setCsignature("");
         result.setEncryptflag(false);
+        result.setCount("");
         return result;
     }
     public static Result failure(Object data,Object count,Object exdata){
@@ -113,6 +120,7 @@ public class Result implements Serializable {
         result.setMsignature("");
         result.setCsignature("");
         result.setEncryptflag(false);
+        result.setCount("");
         return result;
     }
     public static Result failure(Object data,Object count,String exdata, String msignature, String csignature,Boolean encryptflag){
@@ -125,6 +133,7 @@ public class Result implements Serializable {
         result.setMsignature(msignature);
         result.setCsignature(csignature);
         result.setEncryptflag(encryptflag);
+        result.setCount("");
         return result;
     }
 }

@@ -28,7 +28,7 @@ public class ChainService implements Datacheck{
     public Object collectionExists(String name){
         return mongoTemplate.collectionExists(name);
     }
-    public Boolean collectionExists(String Address,String ChainID){
+    public  Boolean collectionExists(String Address,String ChainID){
 
         Criteria criteria = Criteria.where("Adress").is(Address);
         criteria.and("ChainID").is(ChainID);
@@ -52,25 +52,24 @@ public class ChainService implements Datacheck{
 /*
 *   根据ChainHash 获取注册的链信息
 * */
-    public List<Chain> getDocumentByChainHash(String Id){
+    public Chain getDocumentByChainHash(String Id){
         Criteria criteria   = Criteria.where("ChainHash").is(Id);
         Query query=new Query(criteria);
-
-
-
         List<Chain> document = mongoTemplate.find(query,Chain.class, Collectionname);
-//        System.out.println(documentList.size()+collectionname);
-//        System.out.println(collectionExists(collectionname));
-//        System.out.println(getCollectionNames());
+        if (document.size() != 0){
+            System.out.println("ByID:"+document.get(0));
+            return document.get(0);
+        }
+        else
+            return null;
         // 输出结果
-        System.out.println("ByID:"+document);
-        return document;
+
     }
 /*
 *   根据ChainHash更新数据信息
 * */
     public Chain setDocument(String id){
-        List<Chain> chain=getDocumentByChainHash(id);
+//        Chain chain=getDocumentByChainHash(id);
 
         Chain chain1=new Chain()
                 .setChainHash(Integer.toString(new Date().hashCode()))
@@ -96,14 +95,14 @@ public class ChainService implements Datacheck{
         }else
             jsonObject =jsonObject.getJSONObject("data");
         String chainid= (String) jsonObject.get("ChainID");
-        String address= (String) jsonObject.get("address");
+        String address= (String) jsonObject.get("Address");
 //        首先校验是否有空值。
         if(address==null ||chainid==null|| jsonObject.get("Publickey")==null
                 ||jsonObject.get("ChainName")==null
         ){
             System.out.println(jsonObject.get("data"));
             System.out.println(jsonObject.get("ChainID"));
-            System.out.println(jsonObject.get("address"));
+            System.out.println(jsonObject.get("Address"));
             System.out.println(jsonObject.get("Publickey"));
             System.out.println(jsonObject.get("ChainName"));
             return false;
