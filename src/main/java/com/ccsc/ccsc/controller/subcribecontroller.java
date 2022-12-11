@@ -25,7 +25,7 @@ public class subcribecontroller {
     public Result register(String jsonObject){
         System.out.println(jsonObject);
         JSONObject jsonObject1=JSONObject.parseObject(jsonObject).getJSONObject("data");
-        System.out.print(jsonObject1.get("address"));
+        System.out.print(jsonObject1.get("Address"));
 
         return Result.success("success");
     }

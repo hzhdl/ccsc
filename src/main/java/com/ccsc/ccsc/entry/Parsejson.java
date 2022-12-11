@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 
-public interface Parsejson {
+public interface Parsejson<T> {
 
-    public Object parsejsonwithInstance(JSONObject jsonObject) throws NoSuchAlgorithmException, NoSuchProviderException;
+    public T parsejsonwithInstance(JSONObject jsonObject) throws NoSuchAlgorithmException, NoSuchProviderException;
 }

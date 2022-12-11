@@ -4,9 +4,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.ccsc.ccsc.entry.Chain;
 import com.ccsc.ccsc.entry.Contract;
 import com.ccsc.ccsc.entry.Parsejson;
+import com.ccsc.ccsc.entry.Subscribe;
 import com.ccsc.ccsc.service.ChainService;
 import com.ccsc.ccsc.service.ContractService;
 import com.ccsc.ccsc.service.Datacheck;
+import com.ccsc.ccsc.service.SubscribeService;
 import com.ccsc.ccsc.util.RSACipher;
 import com.ccsc.ccsc.util.Result;
 import io.swagger.annotations.Api;
@@ -20,7 +22,8 @@ import javax.annotation.Resource;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Date;
 
 @RestController
 @RequestMapping("/Contract")
@@ -34,6 +37,9 @@ public class contractcontroller {
     @Resource
     ChainService chainService;
 
+    @Resource
+    SubscribeService subscribeService;
+
     @RequestMapping("/register")
     @ApiOperation("注册")
     public Result register(@RequestBody(required = false) String data) throws NoSuchAlgorithmException, NoSuchProviderException {
@@ -44,8 +50,8 @@ public class contractcontroller {
         Datacheck datacheck=contractService;
         Boolean checkdefault = datacheck.checkdefault(jsonObject1);
         if (checkdefault){
-            Parsejson parsejson=new Contract();
-            Contract contract = (Contract) parsejson.parsejsonwithInstance(jsonObject1);
+            Parsejson<Contract> parsejson=new Contract();
+            Contract contract = parsejson.parsejsonwithInstance(jsonObject1);
             if (contract == null){
                 return Result.success("服务器错误，请稍后重试！");
             }
@@ -86,46 +92,67 @@ public class contractcontroller {
         System.out.println(data);
         JSONObject jsonObject1=JSONObject.parseObject(data);
 //        检验数据正确性
-        Datacheck datacheck=contractService;
+        Datacheck datacheck=subscribeService;
         Boolean checkdefault = datacheck.checkdefault(jsonObject1);
+
 //        数据检验完  处理插入
         if (checkdefault){
 //            格式化json数据，并生成实际的订阅对象。
-            Parsejson parsejson=new Contract();
-            Contract contract = (Contract) parsejson.parsejsonwithInstance(jsonObject1);
-            if (contract == null){
-                return Result.success("服务器错误，请稍后重试！");
+            Subscribe subscribe=subscribeService.getDocumentByCCSCHash(
+                    (String)jsonObject1.getJSONObject("data").get("CCSCHash"),
+                    (String)jsonObject1.getJSONObject("data").get("ChainHash")
+            );
+
+            if (subscribe == null){
+                subscribe=new Subscribe()
+                        .setCCSCHash((String)jsonObject1.getJSONObject("data").get("CCSCHash"))
+                        .setChainHash((String)jsonObject1.getJSONObject("data").get("ChainHash"))
+                        .setSChainHash(new ArrayList<String>())
+                        .setStatus((String)jsonObject1.getJSONObject("data").get("Status"))
+                        .setFlag((String)jsonObject1.getJSONObject("data").get("Flag"))
+                        .setExdata((String)jsonObject1.getJSONObject("data").get("Exdata"))
+                        .setTime(new Date());
+
             }
 
 //            System.out.println(contract.toString());
 
-            Contract contract1 = contractService.insertDocument(contract);
+            subscribe.addSChainHash((String)jsonObject1.getJSONObject("data").get("SChainHash"));
+            System.out.println(subscribe.toString());
+//          保存更新过后的订阅数据
+            boolean b = subscribeService.saveSChainHash(subscribe);
+            if(b){
 
 //            准备要返回的数据
-            JSONObject resultdata= new JSONObject();
-            resultdata.put("ChainHash",contract1.getChainHash());
-            resultdata.put("CCSChash",contract1.getCCSCHash());
-            resultdata.put("input",jsonObject1);
-            resultdata.put("Flag",contract1.getFlag());
-            resultdata.put("Publickey",chainHash.getClientPublicKey());
-            System.out.println(resultdata.toString());
-            Result result= Result.success();
-            result.setMsg("注册成功")
-                    .setCsignature(
-                            RSACipher.sign(
-                                    chainHash.getClientSerectKey(),
-                                    resultdata.toString().getBytes(StandardCharsets.UTF_8)
-                            )
-                    )
-                    .setMsignature("")
-                    .setEncryptflag(false)
-                    .setData(resultdata);
-            return result;
+                JSONObject resultdata= new JSONObject();
+                resultdata.put("ChainHash",subscribe.getChainHash());
+                resultdata.put("CCSChash",subscribe.getCCSCHash());
+                resultdata.put("input",jsonObject1);
+                resultdata.put("Flag",subscribe.getFlag());
+
+                System.out.println(resultdata.toString());
+                Result result= Result.success();
+                Chain documentByChainHash = chainService.getDocumentByChainHash((String) jsonObject1.getJSONObject("data").get("ChainHash"));
+                result.setMsg("注册成功")
+                        .setCsignature(
+                                RSACipher.sign(
+                                        documentByChainHash.getClientSerectKey(),
+                                        resultdata.toString().getBytes(StandardCharsets.UTF_8)
+                                )
+                        )
+                        .setMsignature("")
+                        .setEncryptflag(false)
+                        .setData(resultdata);
+                return result;
+            }
+            return Result.failure("订阅失败，请检查参数，合约状态接口是否被注册");
+
 
         }else{
             return Result.failure("参数不对，请校验请求参数！");
         }
     }
+
 
 
 

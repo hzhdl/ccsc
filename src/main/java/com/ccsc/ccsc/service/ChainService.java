@@ -30,7 +30,7 @@ public class ChainService implements Datacheck{
     }
     public  Boolean collectionExists(String Address,String ChainID){
 
-        Criteria criteria = Criteria.where("Adress").is(Address);
+        Criteria criteria = Criteria.where("Address").is(Address);
         criteria.and("ChainID").is(ChainID);
         Query query= new Query(criteria);
         List<Chain> chains = mongoTemplate.find(query, Chain.class, Collectionname);
@@ -73,7 +73,7 @@ public class ChainService implements Datacheck{
 
         Chain chain1=new Chain()
                 .setChainHash(Integer.toString(new Date().hashCode()))
-                .setAdress("dfsfsd")
+                .setAddress("dfsfsd")
                 .setFlag("s234sdaffsdf")
                 .setExdata(id);
         System.out.println(new Date().hashCode());

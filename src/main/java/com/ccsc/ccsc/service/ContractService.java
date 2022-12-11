@@ -26,6 +26,23 @@ public class ContractService implements Datacheck{
         return mongoTemplate.insert(contract,Collectionname);
     }
 
+    /*
+     *   根据CCSCHash 获取注册的链信息
+     * */
+    public Contract getDocumentByCCSCHash(String Id){
+        Criteria criteria   = Criteria.where("CCSCHash").is(Id);
+        Query query=new Query(criteria);
+        List<Contract> document = mongoTemplate.find(query,Contract.class, Collectionname);
+        if (document.size() != 0){
+            System.out.println("ByID:"+document.get(0));
+            return document.get(0);
+        }
+        else
+            return null;
+        // 输出结果
+
+    }
+
     public  Boolean collectionExists(String Address,String ChainHash,String FunctionName){
 
         Criteria criteria = Criteria.where("Address").is(Address);

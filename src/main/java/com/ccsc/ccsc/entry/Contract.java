@@ -17,7 +17,7 @@ import java.util.Date;
 @Data
 @ToString
 @Accessors(chain = true)
-public class Contract extends Commucation implements Parsejson{
+public class Contract extends Commucation implements Parsejson<Contract>{
 
     private String ChainHash;
     private String CCSCHash;
@@ -54,7 +54,7 @@ public class Contract extends Commucation implements Parsejson{
       *
       * */
     @Override
-    public Object parsejsonwithInstance(JSONObject jsonObject) throws NoSuchAlgorithmException, NoSuchProviderException {
+    public Contract parsejsonwithInstance(JSONObject jsonObject) throws NoSuchAlgorithmException, NoSuchProviderException {
         try {
             RSACipher.generateKeyPair();
         }catch (Exception exception){
@@ -64,7 +64,7 @@ public class Contract extends Commucation implements Parsejson{
         jsonObject = jsonObject.getJSONObject("data");
         String ContractHash= Hex.encodeHexString(Sha512DigestUtils.sha(jsonObject.toString()
                 + String.valueOf(new Date().getTime())));
-        return new Contract()
+        return (Contract) new Contract()
                 .setExdata("")
                 .setCCSCHash(ContractHash)
                 .setChainHash((String) jsonObject.get("ChainHash"))

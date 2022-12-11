@@ -21,10 +21,10 @@ import java.util.Date;
 @Data
 @ToString
 @Accessors(chain = true)
-public class Chain extends Commucation implements Parsejson {
+public class Chain extends Commucation implements Parsejson<Chain> {
 
     private String ChainHash;
-    private String Adress;
+    private String Address;
     private String ChainID;
     private String ChainName;
     private String Exdata;
@@ -52,7 +52,7 @@ public class Chain extends Commucation implements Parsejson {
     *
     * */
     @Override
-    public Object parsejsonwithInstance(JSONObject jsonObject) throws NoSuchAlgorithmException, NoSuchProviderException {
+    public Chain parsejsonwithInstance(JSONObject jsonObject) throws NoSuchAlgorithmException, NoSuchProviderException {
         try {
             RSACipher.generateKeyPair();
         }catch (Exception exception){
@@ -62,10 +62,10 @@ public class Chain extends Commucation implements Parsejson {
         jsonObject = jsonObject.getJSONObject("data");
         String chainhash= Hex.encodeHexString(Sha512DigestUtils.sha(jsonObject.toString()
                 + String.valueOf(new Date().getTime())));
-        return new Chain()
+        return (Chain) new Chain()
                 .setChainHash(chainhash)
                 .setExdata("")
-                .setAdress((String) jsonObject.get("address"))
+                .setAddress((String) jsonObject.get("Address"))
                 .setFlag("0")
                 .setChainID((String) jsonObject.get("ChainID"))
                 .setChainName((String) jsonObject.get("ChainName"))

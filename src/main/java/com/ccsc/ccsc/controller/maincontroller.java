@@ -8,22 +8,16 @@ import com.ccsc.ccsc.service.CheckSign;
 import com.ccsc.ccsc.service.Datacheck;
 import com.ccsc.ccsc.util.RSACipher;
 import com.ccsc.ccsc.util.Result;
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.spring.web.json.Json;
+
 import javax.annotation.Resource;
-import javax.management.relation.Relation;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.util.Arrays;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/Chain")
@@ -52,8 +46,8 @@ public class maincontroller {
         Datacheck datacheck = chainService;
         Boolean result=datacheck.checkdefault(jsonObject);
         if (result){
-            Parsejson parsejson = new Chain() ;
-            Chain chain=(Chain) parsejson.parsejsonwithInstance(jsonObject);
+            Parsejson<Chain> parsejson = new Chain() ;
+            Chain chain= parsejson.parsejsonwithInstance(jsonObject);
             if (chain == null){
                 return Result.success("服务器错误，请稍后重试！");
             }
@@ -63,8 +57,8 @@ public class maincontroller {
             resultdata.put("input",jsonObject);
             resultdata.put("status",chain1.getStatus());
             resultdata.put("Publickey",chain1.getClientPublicKey());
-            System.out.println(resultdata.toString());
-
+//            System.out.println(resultdata.toString());
+            System.out.println(chain1.toString());
             Result success=new Result()
                     .setMsg("注册成功")
                     .setCode(0)

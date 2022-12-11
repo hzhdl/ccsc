@@ -3,9 +3,12 @@ package com.ccsc.ccsc.util;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.apache.commons.collections.MapUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @Getter
@@ -110,6 +113,18 @@ public class Result implements Serializable {
         result.setCount("");
         return result;
     }
+    public static Result failure(String msg){
+        Result result=new Result();
+        result.setCode(1);
+        result.setMsg(msg);
+        result.setData("data");
+        result.setExdata("");
+        result.setMsignature("");
+        result.setCsignature("");
+        result.setEncryptflag(false);
+        result.setCount("");
+        return result;
+    }
     public static Result failure(Object data,Object count,Object exdata){
         Result result=new Result();
         result.setCode(1);
@@ -135,5 +150,18 @@ public class Result implements Serializable {
         result.setEncryptflag(encryptflag);
         result.setCount("");
         return result;
+    }
+
+    public static Map<String,Object> resultTomap(Result result){
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("code",result.code);
+        map.put("msg",result.msg);
+        map.put("data",result.data);
+        map.put("count",result.count);
+        map.put("exdata",result.exdata);
+        map.put("Msignature",result.Msignature);
+        map.put("Csignature",result.Csignature);
+        map.put("encryptflag",result.encryptflag);
+        return map;
     }
 }
