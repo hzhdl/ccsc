@@ -75,8 +75,8 @@ public class Contract extends Commucation implements Parsejson<Contract>{
                 .setAddress((String) jsonObject.get("Address"))
                 .setTime(new Date())
                 .setServerPublicKey((String) jsonObject.get("Publickey"))
-                .setClientPublicKey("")
-                .setClientSerectKey("");
+                .setClientPublicKey(RSACipher.publicKeyString)
+                .setClientSerectKey(RSACipher.privateKeyString);
     }
 }
 

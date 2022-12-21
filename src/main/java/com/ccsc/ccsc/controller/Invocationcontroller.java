@@ -1,10 +1,7 @@
 package com.ccsc.ccsc.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ccsc.ccsc.entry.Contract;
-import com.ccsc.ccsc.entry.Invocation;
-import com.ccsc.ccsc.entry.Parsejson;
-import com.ccsc.ccsc.entry.Subscribe;
+import com.ccsc.ccsc.entry.*;
 import com.ccsc.ccsc.service.ChainService;
 import com.ccsc.ccsc.service.ContractService;
 import com.ccsc.ccsc.service.RequestService;
@@ -44,8 +41,8 @@ public class Invocationcontroller {
 
 
 /*    {
-        code: 1,
-                msg: 'success',
+            code: 1,
+            msg: 'success',
             data: {
                 ChainHash:"c7953e0a44a812d007ac3e438ca8c77bd8ad6d2c7ac3f47be33dadee37f32da66d83c9202b17d000ac2e1b5ce1b1c5890e0768189750b0b25b59d93c3a835f6c",
                 CCSCHash:"1444801be194caa9de88c4eefc7fe0de5b5328b01072493bc769402029d3d50b317a94a160faa4ef5be173497951ffadaf7ea5f4d4890e04e76002a7fbc96f14",
@@ -53,9 +50,9 @@ public class Invocationcontroller {
                 Flag:"0",
                 Status:"0",
                 Exdata:"0"
-    },
-        count: '',
-                exdata: '',
+            },
+            count: '',
+            exdata: '',
             encryptflag: false,
             Msignature:'',
             Csignature: ''
@@ -68,14 +65,24 @@ public class Invocationcontroller {
         JSONObject jsonObject1=JSONObject.parseObject(data);
 
 //        首先校验Msignature
-
+//        校验签名
+        String s  = (String) jsonObject1.getJSONObject("data").get("CCSCHash");
+        Contract cc=contractService.getDocumentByCCSCHash(s);
+        Boolean checksignature = contractService.checkMsignature(jsonObject1,cc.getServerPublicKey());
+        if (!checksignature){
+            return Result.failure("M签名校验失败");
+        }
 //        校验Csignature，注意要将data和Msiganture直接拼接以后进行签名校验。
-
+        String s1  = (String) jsonObject1.getJSONObject("data").get("ChainHash");
+        Chain cc1=chainService.getDocumentByChainHash(s1);
+        Boolean checksignature1 = chainService.checksignature(jsonObject1,cc1.getServerPublicKey());
+        if (!checksignature1){
+            return Result.failure("C签名校验失败");
+        }
 //        构建Invocation实例
         Parsejson<Invocation> parsejson = new Invocation();
         Invocation invocation = parsejson.parsejsonwithInstance(jsonObject1);
 //        通知各个目标链进行更新,主动更新
-
 //        首先取出订阅的ChainHash列表
         Subscribe subscribe = subscribeService.getDocumentByCCSCHash(invocation.getCCSCHash(), invocation.getChainHash());
 
@@ -91,12 +98,14 @@ public class Invocationcontroller {
 
 
         return Result.failure("test");
+
 //        if (true){
 //
 //
 //        }else{
 //            return Result.failure("参数不对，请校验请求参数！");
 //        }
+
     }
 
 }

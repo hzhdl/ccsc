@@ -43,7 +43,7 @@ public class Invocation implements Parsejson<Invocation>{
         return new Invocation()
                 .setCCSCHash((String) jsonObject1.get("CCSCHash"))
                 .setChainHash((String) jsonObject1.get("ChainHash"))
-                .setResult((JSONObject) jsonObject1.get("Result"))
+                .setResult(jsonObject1.getJSONObject("Result"))
                 .setInput(jsonObject1)
                 .setTime(new Date())
                 .setFlag((String) jsonObject1.get("Flag"))

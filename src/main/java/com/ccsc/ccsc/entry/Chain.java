@@ -33,24 +33,39 @@ public class Chain extends Commucation implements Parsejson<Chain> {
     private Date time;
 
 
+    public JSONObject toJSONString() {
+        return JSONObject
+                .parseObject("{" +
+                "ChainHash:'" + ChainHash + '\'' +
+                ", Address:'" + Address + '\'' +
+                ", ChainID:'" + ChainID + '\'' +
+                ", ChainName:'" + ChainName + '\'' +
+                ", Exdata:'" + Exdata + '\'' +
+                ", Flag:'" + Flag + '\'' +
+                ", Status:'" + Status + '\'' +
+                ", time:'" + time.getTime() + '\'' +
+                ", clientPublicKey:'" + ClientPublicKey + '\'' +
+                "}");
+    }
+
     /*
-        * {
-            code: 1,
-            msg: 'success',
-            data: {
-                address:"http://172.16.0.13:3000",
-                ChainName:"ETH",
-                ChainID:"11",
-                Publickey:"",
-            },
-            count: null,
-            exdata: '',
-            encryptflag: false,
-            Msignature:'',
-            Csignature: ''
-        }
-    *
-    * */
+            * {
+                code: 1,
+                msg: 'success',
+                data: {
+                    address:"http://172.16.0.13:3000",
+                    ChainName:"ETH",
+                    ChainID:"11",
+                    Publickey:"",
+                },
+                count: null,
+                exdata: '',
+                encryptflag: false,
+                Msignature:'',
+                Csignature: ''
+            }
+        *
+        * */
     @Override
     public Chain parsejsonwithInstance(JSONObject jsonObject) throws NoSuchAlgorithmException, NoSuchProviderException {
         try {

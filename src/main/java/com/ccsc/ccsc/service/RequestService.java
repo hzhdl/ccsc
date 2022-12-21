@@ -1,10 +1,12 @@
 package com.ccsc.ccsc.service;
 
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ccsc.ccsc.entry.Chain;
 import com.ccsc.ccsc.entry.Invocation;
 import com.ccsc.ccsc.entry.Subscribe;
+import com.ccsc.ccsc.util.RSACipher;
 import com.ccsc.ccsc.util.Result;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -59,16 +61,26 @@ public class RequestService {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("input",invocation.getInput());
         jsonObject.put("Msignature",invocation.getMsignature());
-        jsonObject.put("chain",chain);
-        result.setData(jsonObject)
-                .setMsignature(invocation.getMsignature())
-                .setCsignature("");
+        jsonObject.put("chain", chain.toJSONString());
+        result.setData(jsonObject.toString())
+                .setMsignature("")/*添加M签名数据*/
+                .setCsignature(
+                    RSACipher.sign(
+                        chain.getClientSerectKey(),
+                        jsonObject.toString().getBytes()
+                    )
+                );/*添加C签名数据*/
+
         Map<String,Object> map = Result.resultTomap(result);
         //创建请求体并添加数据
         HttpEntity<Map> httpEntity = new HttpEntity<>(map, httpHeaders);
 //        根据chain获取网关URL，并进行访问
         String url = chain.getAddress()+"/activesync";
-        ResponseEntity<String> forEntity = restTemplate.postForEntity(url,httpEntity,String.class);//此处三个参数分别是请求地址、请求体以及返回参数类型
+        ResponseEntity<String> forEntity = restTemplate.postForEntity(
+                url,
+                httpEntity,
+                String.class
+        );//此处三个参数分别是请求地址、请求体以及返回参数类型
 
         return forEntity.toString();
     }

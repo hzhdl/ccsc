@@ -49,13 +49,22 @@ public class contractcontroller {
 //        检验数据正确性
         Datacheck datacheck=contractService;
         Boolean checkdefault = datacheck.checkdefault(jsonObject1);
+
         if (checkdefault){
+            //        校验签名
+            String s  = (String) jsonObject1.getJSONObject("data").get("ChainHash");
+            Chain cc=chainService.getDocumentByChainHash(s);
+            Boolean checksignature = chainService.checksignature(jsonObject1,cc.getServerPublicKey());
+            if (!checksignature){
+                return Result.failure("签名校验失败");
+            }
+
             Parsejson<Contract> parsejson=new Contract();
             Contract contract = parsejson.parsejsonwithInstance(jsonObject1);
             if (contract == null){
-                return Result.success("服务器错误，请稍后重试！");
+                return Result.failure("服务器错误，请稍后重试！");
             }
-            Chain chainHash = chainService.getDocumentByChainHash(contract.getChainHash());
+//            Chain chainHash = chainService.getDocumentByChainHash(contract.getChainHash());
 //            System.out.println(contract.toString());
             Contract contract1 = contractService.insertDocument(contract);
 //            准备要返回的数据
@@ -65,19 +74,25 @@ public class contractcontroller {
             resultdata.put("input",jsonObject1);
             resultdata.put("Flag",contract1.getFlag());
 //            合约的接口通信均采用链注册的公私钥，合约注册不需要再次生成新的公私钥，仅记录合约接口的公钥即可。
-            resultdata.put("Publickey",chainHash.getClientPublicKey());
-            System.out.println(resultdata.toString());
+            resultdata.put("Publickey",cc.getClientPublicKey());
+//            System.out.println(resultdata.toString());
             Result result= Result.success();
             result.setMsg("注册成功")
                     .setCsignature(
                             RSACipher.sign(
-                                    chainHash.getClientSerectKey(),
-                                    resultdata.toString().getBytes(StandardCharsets.UTF_8)
+                                    cc.getClientSerectKey(),
+                                    resultdata.toString().getBytes()
                             )
                     )
-                    .setMsignature("")
+                    .setMsignature(
+                            RSACipher.sign(
+                                    contract1.getClientSerectKey(),
+                                    resultdata.toString().getBytes()
+                            )
+                    )
                     .setEncryptflag(false)
-                    .setData(resultdata);
+                    .setData(resultdata.toString());
+            System.out.println(cc.getClientSerectKey());
             return result;
 
         }else{
@@ -89,14 +104,24 @@ public class contractcontroller {
     @ApiOperation("订阅")
     public Result subscribe(@RequestBody(required = false) String data) throws NoSuchAlgorithmException, NoSuchProviderException {
 //        获取json参数
-        System.out.println(data);
+//        System.out.println(data);
         JSONObject jsonObject1=JSONObject.parseObject(data);
 //        检验数据正确性
         Datacheck datacheck=subscribeService;
         Boolean checkdefault = datacheck.checkdefault(jsonObject1);
 
+
+
 //        数据检验完  处理插入
         if (checkdefault){
+            //        校验签名
+            String s  = (String) jsonObject1.getJSONObject("data").get("SChainHash");
+            Chain cc=chainService.getDocumentByChainHash(s);
+            Boolean checksignature = chainService.checksignature(jsonObject1,cc.getServerPublicKey());
+            if (!checksignature){
+                return Result.failure("签名校验失败");
+            }
+
 //            格式化json数据，并生成实际的订阅对象。
             Subscribe subscribe=subscribeService.getDocumentByCCSCHash(
                     (String)jsonObject1.getJSONObject("data").get("CCSCHash"),
@@ -142,7 +167,7 @@ public class contractcontroller {
                         )
                         .setMsignature("")
                         .setEncryptflag(false)
-                        .setData(resultdata);
+                        .setData(resultdata.toString());
                 return result;
             }
             return Result.failure("订阅失败，请检查参数，合约状态接口是否被注册");

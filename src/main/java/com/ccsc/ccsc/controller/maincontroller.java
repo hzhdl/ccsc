@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.util.Arrays;
+import java.util.Date;
 
 @RestController
 @RequestMapping("/Chain")
@@ -45,11 +46,18 @@ public class maincontroller {
 //        校验数据格式，是否可以插入
         Datacheck datacheck = chainService;
         Boolean result=datacheck.checkdefault(jsonObject);
-        if (result){
+//        签名校验
+        Date date = new Date();
+        Boolean b1 = chainService.checksignature(jsonObject);
+        Date date1 = new Date();
+        System.out.println(date1.compareTo(date));
+
+        if (result&&b1){
+            System.out.println("签名校验成功，数据检验成功");
             Parsejson<Chain> parsejson = new Chain() ;
             Chain chain= parsejson.parsejsonwithInstance(jsonObject);
             if (chain == null){
-                return Result.success("服务器错误，请稍后重试！");
+                return Result.failure("服务器错误，请稍后重试！");
             }
             Chain chain1 = chainService.insertDocument(chain);
             JSONObject resultdata= new JSONObject();
@@ -65,7 +73,7 @@ public class maincontroller {
                     .setExdata("")
                     .setEncryptflag(false)
                     .setCount("")
-                    .setData(resultdata)
+                    .setData(resultdata.toString())
                     .setMsignature("")
                     .setCsignature("");
             success.setCsignature(
@@ -75,11 +83,13 @@ public class maincontroller {
             );
             byte[] b=Base64Utils.decodeFromString(success.getCsignature());
 
-            System.out.println(RSACipher.checkSign(chain1.getClientPublicKey(),resultdata.toString().getBytes(),success.getCsignature()));
+//            System.out.println(RSACipher.checkSign(chain1.getClientPublicKey(),resultdata.toString().getBytes(),success.getCsignature()));
             return success;
         }
-        else{
-            return Result.success("链已被注册，请检查你的域名和chainID");
+        else if (!result){
+            return Result.failure("链已被注册，请检查你的域名和chainID");
+        }else {
+            return Result.failure("请检查您的签名和公钥是否匹配！");
         }
     }
 

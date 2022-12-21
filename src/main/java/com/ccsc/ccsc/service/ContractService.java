@@ -69,7 +69,7 @@ public class ContractService implements Datacheck{
             String Address= (String) jsonObject.get("Address");
             String FunctionName = (String) jsonObject.get("FunctionName");
             String Flag = (String) jsonObject.get("Flag");
-            JSONObject ParamList = (JSONObject) jsonObject.get("ParamList");
+            JSONObject ParamList = jsonObject.getJSONObject("ParamList");
             String Publickey = (String) jsonObject.get("Publickey");
 
 
