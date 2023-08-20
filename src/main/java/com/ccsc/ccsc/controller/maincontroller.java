@@ -87,7 +87,7 @@ public class maincontroller {
             return success;
         }
         else if (!result){
-            return Result.failure("链已被注册，请检查你的域名和chainID");
+            return Result.failure("链已被注册，请检查你的域名和chainID，如丢失相关注册数据，请联系相关管理员。");
         }else {
             return Result.failure("请检查您的签名和公钥是否匹配！");
         }

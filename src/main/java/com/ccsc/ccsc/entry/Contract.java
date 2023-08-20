@@ -65,11 +65,11 @@ public class Contract extends Commucation implements Parsejson<Contract>{
         String ContractHash= Hex.encodeHexString(Sha512DigestUtils.sha(jsonObject.toString()
                 + String.valueOf(new Date().getTime())));
         return (Contract) new Contract()
-                .setExdata("")
+                .setExdata(jsonObject.get("Status")==null?"":(String) jsonObject.get("Status"))
                 .setCCSCHash(ContractHash)
                 .setChainHash((String) jsonObject.get("ChainHash"))
                 .setFlag((String) jsonObject.get("Flag"))
-                .setStatus((String) jsonObject.get("Status")==null?"":(String) jsonObject.get("Status"))
+                .setStatus(jsonObject.get("Status")==null?"":(String) jsonObject.get("Status"))
                 .setParamList(jsonObject.getJSONObject("ParamList"))
                 .setFunctionName((String) jsonObject.get("FunctionName"))
                 .setAddress((String) jsonObject.get("Address"))

@@ -58,6 +58,7 @@ public class SubscribeService implements Datacheck{
         boolean b=false;
         if (updateResult.getMatchedCount()>0){
             resultInfo = "共匹配到" + updateResult.getMatchedCount() + "条数据,修改了" + updateResult.getModifiedCount() + "条数据";
+//            System.out.println(resultInfo);
             b=true;
         }else {
             Subscribe insert = mongoTemplate.insert(subscribe,Collectionname);

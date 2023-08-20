@@ -188,7 +188,7 @@ public class RSACipher {
 //        byte[] decryptText = RSACipher.decrypt(Config.SERVER_PRIVATE_KEY, encryptText);
 //        System.out.println("解密后:\n" + new String(decryptText));
         generateKeyPair();
-        generateKeyPair();
+//        generateKeyPair();
     }
 }
 

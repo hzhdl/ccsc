@@ -20,6 +20,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/Contract/**").permitAll()
                 .antMatchers("/Subcribe/**").permitAll()
                 .antMatchers("/Invocation/**").permitAll()
+                .antMatchers("/evaluation/**").permitAll()
                 .antMatchers("/Test/**").permitAll()
                 .anyRequest().authenticated()
                 .and()

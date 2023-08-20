@@ -1,6 +1,7 @@
 package com.ccsc.ccsc.entry;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONArray;
 import com.ccsc.ccsc.util.RSACipher;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,7 +28,7 @@ public class Subscribe {
     private String CCSCHash;
 
     //订阅的链
-    private List<String> SChainHash;
+    private JSONArray SChainHash;
 
     //    标识一下函数接口的状态
 //    标识接口类型
@@ -40,9 +41,16 @@ public class Subscribe {
     private String Exdata;
     private Date time;
 
-    public void addSChainHash(String NewSChainHash){
-        SChainHash.add(NewSChainHash);
+    public void addSChainHash(String NewSChainHash,JSONArray args){
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("ChainHash",NewSChainHash);
+        jsonObject.put("preargs",args);
+        SChainHash.add(jsonObject);
     }
-
+    public void addSChainHash(String NewSChainHash){
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("ChainHash",NewSChainHash);
+        SChainHash.add(jsonObject);
+    }
 
 }
